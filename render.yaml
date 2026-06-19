@@ -1,0 +1,53 @@
+# Render Blueprint for the Sidebet backend.
+# Render has no native Java runtime, so the web service is built from the
+# Dockerfile (which runs `./mvnw clean package -DskipTests` and starts the jar
+# with `java -Dspring.profiles.active=prod -jar`).
+databases:
+  - name: sidebet-db
+    plan: free
+    databaseName: sidebet
+    user: sidebet
+
+services:
+  - type: web
+    name: sidebet
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      # Activate the Postgres profile (also set via -D in the Dockerfile CMD).
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+
+      # Render exposes the connection string only in postgresql://... form.
+      # We wire it through (it satisfies the ${DATABASE_URL} placeholder in
+      # application-prod.properties as a fallback), but the actual jdbc: URL is
+      # assembled from the discrete fields below in the Dockerfile CMD.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sidebet-db
+          property: connectionString
+
+      # Discrete fields used to build jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - key: DB_HOST
+        fromDatabase:
+          name: sidebet-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: sidebet-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: sidebet-db
+          property: database
+
+      # Spring picks these up via relaxed binding (spring.datasource.username/password).
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: sidebet-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: sidebet-db
+          property: password
