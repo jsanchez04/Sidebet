@@ -16,6 +16,9 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        if (userRepository.count() > 0) {
+            return; // Already seeded — don't add duplicates
+        }
         userRepository.save(new User("marco", 1000));
         userRepository.save(new User("jeremiah", 1000));
         userRepository.save(new User("priya", 1000));
