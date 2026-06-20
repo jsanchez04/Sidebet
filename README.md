@@ -97,9 +97,17 @@ The core market lifecycle (create → wager → resolve → pay out) is complete
 deployed, with a `/markets/{id}/stats` endpoint powering a live YES/NO chance
 percentage. Planned next:
 
-- [ ] Multiple outcomes per market (early / on time / 5 min late / …), not just YES/NO
-- [ ] Automatic closing-time enforcement on markets
-- [ ] User authentication
+- [ ] **User authentication & security** — real accounts (login/signup), password
+      hashing, authorization so users can only resolve markets they created, and
+      input validation/rate limiting on the API.
+- [ ] Multiple outcomes per market (early / on time / 5 min late / …), not just YES/NO.
+- [ ] Automatic closing-time enforcement on markets.
+- [ ] **Real-time price chart (Kalshi-style)** — a longer-term goal: record a
+      time series of each market's implied probability and render it as a
+      live-updating chart (time on the x-axis, probability on the y-axis). This is
+      a substantial effort: it requires storing price history over time and, to be
+      a true continuous price, evolving the current pooled-payout model toward an
+      order-book / dynamic-pricing engine.
 
 ## License
 
